@@ -1,5 +1,5 @@
-## Simple Music Recommendation
-# Uses Wikipedia, Spotify, and Twitter APIs
+# Simple Music Recommendation
+## Uses Wikipedia, Spotify, and Twitter APIs
 
 | Method | Endpoint          | Usage                                               | Returns   |
 |--------|-------------------|-----------------------------------------------------|-----------|
