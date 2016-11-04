@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import Flask, jsonify
 from spotipy.oauth2 import SpotifyClientCredentials
-import tweepy, wikipedia, spotipy, jsonify,json
+import tweepy, wikipedia, spotipy,json
 
 app = Flask(__name__)
 
@@ -39,7 +39,8 @@ def wikiTest(queryW):
 def spotTest(queryS): #Search returns dict type
     #spotJson = json.loads(sp.search(q=queryS,type='artist'))
     if len(sp.search(q=queryS,type='artist')['artists']['items']) == 0:
-        return jsonify.dumps(sp.search(q=queryS, type='track'))
+        #return json.dumps(sp.search(q=queryS, type='track'))
+        return json.dumps(sp.album_tracks(sp.search(q=queryS, type='track')['tracks']['items'][0]['album']['uri']))
     artistID = json.dumps(sp.search(q=queryS,type='artist')['artists']['items'][0]['uri'])#artist_top_tracks(artist_id, country='US')
     id = artistID[16:len(artistID)-1]
     return json.dumps(sp.artist_top_tracks(artist_id=id))
@@ -47,7 +48,7 @@ def spotTest(queryS): #Search returns dict type
 @app.route('/rec/<queryG>')
 def generalQuery(queryG):
     if len(sp.search(q=queryG,type='artist')['artists']['items']) == 0:
-        return jsonify.dumps(sp.search(q=queryG, type='track'))
+        return json.dumps(sp.search(q=queryG, type='track'))
     wikiSug = wikipedia.suggest(query=queryG)
     artistID = json.dumps(sp.search(q=queryG,type='artist')['artists']['items'][0]['uri'])#artist_top_tracks(artist_id, country='US')
     id = artistID[16:len(artistID)-1]
