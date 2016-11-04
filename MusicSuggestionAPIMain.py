@@ -1,6 +1,6 @@
 from flask import Flask
 from spotipy.oauth2 import SpotifyClientCredentials
-import tweepy, wikipedia, spotipy, jsonify,json
+import tweepy, wikipedia, spotipy, json
 
 app = Flask(__name__)
 
@@ -11,6 +11,7 @@ auth.access_token_secret = "Qu5rE29KWvCM8Xp4DFFMfwd5MQJ9FqkYw2AEpA7yEXMcJ"
 #Uses my access tokens, no idea if this is right, probably not safe but w/e
 API = tweepy.API(auth) #Creates an instance of API
 
+#Handle Authorization for Spotify
 CLIENTID = '750b513588564b54abaef7745181a88e'
 CLIENTSECRET = 'a8fac678b7664e368842c5864cf2e927'
 clientCreds = SpotifyClientCredentials(client_id= CLIENTID, client_secret= CLIENTSECRET)
@@ -22,6 +23,7 @@ def index():
 
 @app.route('/twitter/<queryT>') #Based on keyword, works OK I guess
 def keywordSearch(queryT):
+    """Twitter endpoint, basic search of tweets"""
     output = ""
     for val in API.search(q=queryT):
         output += val.text + "\n\n"
@@ -29,6 +31,7 @@ def keywordSearch(queryT):
 
 @app.route('/wiki/<queryW>')
 def wikiTest(queryW):
+    """Wikipedia endpoint, returns summary"""
     outputW = ""
     if len(wikipedia.search(queryW)) == 0:
         return "No article"
@@ -37,17 +40,19 @@ def wikiTest(queryW):
 
 @app.route('/spotify/<queryS>') #Assume artist for now
 def spotTest(queryS): #Search returns dict type
+    """Gets basic search results from Spotify"""
     #spotJson = json.loads(sp.search(q=queryS,type='artist'))
     if len(sp.search(q=queryS,type='artist')['artists']['items']) == 0:
-        return jsonify.dumps(sp.search(q=queryS, type='track'))
+        return json.dumps(sp.search(q=queryS, type='track'))
     artistID = json.dumps(sp.search(q=queryS,type='artist')['artists']['items'][0]['uri'])#artist_top_tracks(artist_id, country='US')
     id = artistID[16:len(artistID)-1]
     return json.dumps(sp.artist_top_tracks(artist_id=id))
 
 @app.route('/rec/<queryG>')
 def generalQuery(queryG):
+    """Tries to combine previous three endpoints"""
     if len(sp.search(q=queryG,type='artist')['artists']['items']) == 0:
-        return jsonify.dumps(sp.search(q=queryG, type='track'))
+        return json.dumps(sp.search(q=queryG, type='track'))
     wikiSug = wikipedia.suggest(query=queryG)
     artistID = json.dumps(sp.search(q=queryG,type='artist')['artists']['items'][0]['uri'])#artist_top_tracks(artist_id, country='US')
     id = artistID[16:len(artistID)-1]
