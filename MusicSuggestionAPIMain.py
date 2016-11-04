@@ -43,7 +43,8 @@ def spotTest(queryS): #Search returns dict type
     """Gets basic search results from Spotify"""
     #spotJson = json.loads(sp.search(q=queryS,type='artist'))
     if len(sp.search(q=queryS,type='artist')['artists']['items']) == 0:
-        return json.dumps(sp.search(q=queryS, type='track'))
+        #return json.dumps(sp.search(q=queryS, type='track'))
+        return json.dumps(sp.album_tracks(sp.search(q=queryS, type='track')['tracks']['items'][0]['album']['uri']))
     artistID = json.dumps(sp.search(q=queryS,type='artist')['artists']['items'][0]['uri'])#artist_top_tracks(artist_id, country='US')
     id = artistID[16:len(artistID)-1]
     return json.dumps(sp.artist_top_tracks(artist_id=id))
